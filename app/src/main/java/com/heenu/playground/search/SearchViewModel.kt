@@ -1,4 +1,4 @@
-package com.heenu.playground
+package com.heenu.playground.search
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

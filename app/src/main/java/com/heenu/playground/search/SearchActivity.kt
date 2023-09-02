@@ -1,4 +1,4 @@
-package com.heenu.playground
+package com.heenu.playground.search
 
 import android.content.Context
 import android.content.Intent

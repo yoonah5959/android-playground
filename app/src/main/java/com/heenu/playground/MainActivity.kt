@@ -3,6 +3,7 @@ package com.heenu.playground
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.heenu.playground.databinding.ActivityMainBinding
+import com.heenu.playground.search.SearchActivity
 import kotlin.contracts.ExperimentalContracts
 
 class MainActivity : AppCompatActivity() {

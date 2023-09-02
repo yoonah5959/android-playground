@@ -24,7 +24,7 @@
 
 
         <activity
-            android:name=".SearchActivity"
+            android:name=".search.SearchActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
 
