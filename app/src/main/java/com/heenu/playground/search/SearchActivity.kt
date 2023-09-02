@@ -6,8 +6,13 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.heenu.playground.databinding.ActivitySearchBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -30,14 +35,25 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initializeLayout()
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchResult
+                    .collect {
+
+                    }
+            }
+        }
     }
 
     private fun initializeLayout() {
         with(binding) {
             searchInput.addTextChangedListener {
-                viewModel.searchInput(it.toString())
+                viewModel.onSearchQueryChanged(it.toString())
             }
-
         }
     }
 }
