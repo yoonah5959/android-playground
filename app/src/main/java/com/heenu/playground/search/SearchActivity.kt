@@ -3,6 +3,7 @@ package com.heenu.playground.search
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -12,7 +13,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.heenu.playground.SearchResultUiState
 import com.heenu.playground.databinding.ActivitySearchBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
@@ -46,8 +46,14 @@ class SearchActivity : AppCompatActivity() {
                     .collect { uiState ->
                         with(binding) {
                             when (uiState) {
-                                is SearchResultUiState.Success -> {
+                                is SearchResultUiState.Correct -> {
                                     searchResult.text = uiState.content
+                                    searchResultImage.visibility = View.VISIBLE
+                                }
+
+                                is SearchResultUiState.Wrong -> {
+                                    searchResult.text = uiState.content
+                                    searchResultImage.visibility = View.GONE
                                 }
 
                                 else -> {}
