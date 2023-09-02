@@ -9,6 +9,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.heenu.playground.SearchResultUiState
 import com.heenu.playground.databinding.ActivitySearchBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.onEach
@@ -42,7 +43,16 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchResult
-                    .collect {
+                    .collect { uiState ->
+                        with(binding) {
+                            when (uiState) {
+                                is SearchResultUiState.Success -> {
+                                    searchResult.text = uiState.content
+                                }
+
+                                else -> {}
+                            }
+                        }
 
                     }
             }

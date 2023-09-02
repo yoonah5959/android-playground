@@ -62,7 +62,7 @@ class SearchViewModel @Inject constructor() : ViewModel() {
 
     private suspend fun getSearchContent(query: String): Flow<String> {
         // repository에서 데이터를 가져왔다고 가정
-        delay(5000)
+        delay(500)
 
         return if (query == AVAILABLE_RESULT) {
             flowOf("치킨")
