@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.heenu.playground.databinding.ActivityMainBinding
 import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.contract
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.inputButton.setOnClickListener {
-            InputCoroutineActivity.onNewIntent(this).run {
+            SearchActivity.onNewIntent(this).run {
                 startActivity(this)
             }
         }
