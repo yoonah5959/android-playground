@@ -2,23 +2,19 @@ package com.heenu.playground.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.heenu.playground.SearchResultUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.heenu.common.network.Result
-import com.heenu.common.network.asResult
-import com.heenu.playground.SearchResultUiState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 @HiltViewModel
 @OptIn(FlowPreview::class)
@@ -30,41 +26,32 @@ class SearchViewModel @Inject constructor() : ViewModel() {
 
     private val searchQuery = MutableStateFlow<String>("")
 
-    val searchResult: Flow<SearchResultUiState> =
+    val searchResult: StateFlow<SearchResultUiState> =
         searchQuery
-            .debounce(500)
-            .filter { it.trim().isEmpty().not() }
-            .flatMapLatest {
-                getSearchContent(it)
-                    .asResult()
-                    .map { result ->
-                        when (result) {
-                            Result.Loading -> SearchResultUiState.Loading
-                            is Result.Success -> {
-                                SearchResultUiState.Correct(result.data)
-                            }
-
-                            else -> {
-                                SearchResultUiState.LoadFailed
-                            }
-                        }
+            .debounce(250)
+            .flatMapConcat { query ->
+                flow {
+                    if (query.trim().isEmpty()) {
+                        emit(SearchResultUiState.Empty)
+                    } else {
+                        emit(SearchResultUiState.Loading)
+                        delay(1000)
+                        if (query == CORRECT_QUERY)
+                            emit(SearchResultUiState.Correct())
+                        else
+                            emit(SearchResultUiState.Wrong())
                     }
+                }
             }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = SearchResultUiState.Loading,
+                initialValue = SearchResultUiState.Empty,
             )
 
     fun onSearchQueryChanged(newSearchQuery: String) {
         viewModelScope.launch {
             searchQuery.emit(newSearchQuery)
         }
-    }
-
-    private suspend fun getSearchContent(query: String): Flow<Boolean> {
-        // repository에서 데이터를 가져왔다고 가정
-        delay(500)
-        return flowOf(query == CORRECT_QUERY)
     }
 }

@@ -13,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.heenu.playground.SearchResultUiState
 import com.heenu.playground.databinding.ActivitySearchBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -43,17 +44,29 @@ class SearchActivity : AppCompatActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.searchResult
-                    .collect { uiState ->
+                    .collectLatest { uiState ->
                         with(binding) {
                             when (uiState) {
                                 is SearchResultUiState.Correct -> {
-                                    searchResult.text = uiState.content
+                                    progressBar.visibility = View.GONE
+                                    searchResult.setText(uiState.contentRes)
                                     searchResultImage.visibility = View.VISIBLE
                                 }
 
                                 is SearchResultUiState.Wrong -> {
-                                    searchResult.text = uiState.content
+                                    progressBar.visibility = View.GONE
+                                    searchResult.setText(uiState.contentRes)
                                     searchResultImage.visibility = View.GONE
+                                }
+
+                                SearchResultUiState.Empty -> {
+                                    progressBar.visibility = View.GONE
+                                    searchResult.text = ""
+                                    searchResultImage.visibility = View.GONE
+                                }
+
+                                SearchResultUiState.Loading -> {
+                                    progressBar.visibility = View.VISIBLE
                                 }
 
                                 else -> {}
